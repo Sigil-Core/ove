@@ -1,37 +1,10 @@
 # Open Venture Engine (OVE)
 
-An autonomous Agentic VC boilerplate secured by Sigil's deterministic intent routing. 
-
-
-
-## Overview
-
-The Open Venture Engine (OVE) is a pre-wired, Web3-native technology stack that allows anyone to spin up a fully autonomous Venture Capital firm. It aggregates the best execution primitives into one template, while hardwiring the necessary structural brakes so the agent cannot go rogue and drain its own treasury.
-
-### The Stack
-* **The Brain:** ELIZA / LangChain (Evaluates market conditions and proposes trades).
-* **The Engine:** Coinbase AgentKit (Handles wallet creation and EVM transaction formatting).
-* **The Brakes:** Sigil OS & `@sigilcore/agent-hooks` (Intercepts the transaction and enforces the `ASSURANCE.md` policy).
-* **Identity & Yield:** ERC-6551 (Token Bound Accounts) and Superfluid (for streaming automated yield back to the human GP).
-
-## Getting Started
-
-```bash
-git clone [https://github.com/sigilcore/ove-boilerplate.git](https://github.com/sigilcore/ove-boilerplate.git)
-cd ove-boilerplate
-npm install
-
-# Configure your .env variables
-cp .env.example .env
-
-# Edit your operational constraints
-nano ASSURANCE.md
-
-# Start the Agentic VC
-npm run start
-# Open Venture Engine (OVE)
-
 *A fully autonomous Agentic Venture Capital stack secured by deterministic Intent Attestation enforcement.*
+
+[![Status](https://img.shields.io/badge/status-active--development-black)](#)
+[![License](https://img.shields.io/badge/license-MIT-blue)](#)
+[![Security](https://img.shields.io/badge/security-Intent--Attestation-green)](#)
 
 ---
 
@@ -68,8 +41,7 @@ OVE separates execution into three distinct layers:
 - Formats EVM transactions
 - Generates ERC-4337 UserOperations
 
-### 🛑 The Brakes
-- **Sigil Sign**
+- **[Sigil Sign](https://sign.sigilcore.com)**
 - `@sigilcore/agent-hooks`
 - Enforces deterministic `ASSURANCE.md` policy
 - Issues short-lived Ed25519-signed **Intent Attestations**
@@ -82,10 +54,10 @@ No transaction may execute without a valid Intent Attestation.
 
 OVE integrates modern Web3 primitives:
 
-- **ERC-6551** — Token Bound Accounts (VC Agent is the NFT)
-- **Safe (Gnosis)** — Treasury custody
-- **Superfluid** — Automated revenue streaming to the human GP
-- **ERC-4337** — Account abstraction and programmable execution
+- **[ERC-6551](https://eips.ethereum.org/EIPS/eip-6551)** — Token Bound Accounts (VC Agent is the NFT)
+- **[Safe (Gnosis)](https://safe.global/)** — Treasury custody
+- **[Superfluid](https://www.superfluid.finance/)** — Automated revenue streaming to the human GP
+- **[ERC-4337](https://eips.ethereum.org/EIPS/eip-4337)** — Account abstraction and programmable execution
 
 All outbound execution must route through Sigil.
 
@@ -116,7 +88,7 @@ Submissions after this deadline will not be eligible for the grant.
 To qualify for the $1,500 USDC grant, the submission must demonstrate:
 
 1. A live or reproducible ELIZA-based agent integration.
-2. A real `POST /v1/authorize` request to `sign.sigilcore.com`.
+2. A real `POST /v1/authorize` request to `https://sign.sigilcore.com`.
 3. Successful receipt of a valid Ed25519-signed **Intent Attestation**.
 4. The Intent Attestation being appended to a real EOA transaction or ERC-4337 UserOperation.
 5. On-chain verification that the transaction was executed only after authorization.
@@ -130,7 +102,7 @@ Mocked responses, simulated attestations, or hardcoded JWTs will not qualify.
 Before execution:
 
 1. The agent proposes a transaction.
-2. The transaction intent is sent to `POST /v1/authorize`.
+2. The transaction intent is sent to `POST https://sign.sigilcore.com/v1/authorize`.
 3. Sigil evaluates the request against `ASSURANCE.md`.
 4. If compliant, Sigil returns a short-lived Ed25519-signed Intent Attestation.
 5. The transaction is executed only if the attestation is appended.
@@ -196,3 +168,11 @@ By structurally enforcing deterministic authorization through Sigil Sign, OVE pr
 - Governance can be cryptographically enforced
 - Liability can be bounded by architecture
 - Execution can be provably authorized before capital moves
+
+---
+
+## Documentation
+
+Full technical documentation and integration guides are coming soon.
+
+→ **https://docs.sigilcore.com**
