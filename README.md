@@ -14,19 +14,6 @@ The Open Venture Engine (OVE) is a pre-wired, Web3-native technology stack that 
 * **The Brakes:** Sigil OS & `@sigilcore/agent-hooks` (Intercepts the transaction and enforces the `ASSURANCE.md` policy).
 * **Identity & Yield:** ERC-6551 (Token Bound Accounts) and Superfluid (for streaming automated yield back to the human GP).
 
-## 🏆 Synthesis Hackathon: $5,000 USDC Fiduciary Bounty
-
-We are sponsoring a $5,000 USDC Protocol Bounty at the Synthesis "Proving Ground" for the best Agentic VC built using the OVE and secured by the Fiduciary Agent Framework (FAF).
-
-### Bounty Requirements: The Intent Attestation
-
-To qualify for the bounty, your Agentic VC cannot rely on probabilistic guardrails (like basic system prompts). Your implementation must use the Sigil interceptor wrapper around all high-stakes actions.
-
-1. Clone this repository and configure your `ASSURANCE.md` file.
-2. When your agent proposes a transaction via AgentKit, it must first query `sign.sigilcore.com`.
-3. **CRITICAL:** Your on-chain transaction will only be considered valid if it successfully appends the base64 encoded EdDSA JWT **Intent Attestation** into the transaction calldata. 
-4. Mocked API responses or transactions without a verified Intent Attestation will be immediately disqualified. 
-
 ## Getting Started
 
 ```bash
@@ -104,29 +91,37 @@ All outbound execution must route through Sigil.
 
 ---
 
-## 🏆 Synthesis Hackathon: $5,000 USDC Fiduciary Bounty
+## The Sigil OS Independent Build Bounty
 
-We are sponsoring a **$5,000 USDC Protocol Bounty** at the Synthesis “Proving Ground” for the best Agentic VC built using:
+Building an Agentic VC this week? We are running an independent developer bounty parallel to ongoing ecosystem hackathons.
 
-- Open Venture Engine (OVE)
-- Fiduciary Agent Framework (FAF)
-- Deterministic Intent Attestation enforcement
+### The Challenge
+
+The first developer or team to successfully route their ELIZA agent's transaction intents through the Sigil Sentry API (utilizing the Open Venture Engine) will receive a $1,500 USDC grant.
+
+**Note:** This is an independent grant issued directly by Sigil Core and is not affiliated with or sponsored by third-party hackathon organizers. Payout is contingent on a successful, verifiable API integration and Intent Attestation generation.
 
 ---
 
-## Bounty Requirements: Deterministic Enforcement
+### Submission Deadline
 
-Your Agentic VC **must not rely on probabilistic guardrails** (e.g., system prompts).
+All qualifying integrations must be submitted and verifiable on or before **March 18, 2026 at 23:59 UTC**.
 
-To qualify:
+Submissions after this deadline will not be eligible for the grant.
 
-1. Clone this repository and configure your `ASSURANCE.md` file.
-2. Route all high-stakes actions through `sign.sigilcore.com`.
-3. Ensure every on-chain transaction is preceded by a valid authorization request.
-4. Append the base64-encoded Ed25519 JWT **Intent Attestation** to the transaction calldata.
-5. Transactions without a verified Intent Attestation will be disqualified.
+---
 
-Mocked responses or simulated receipts are not accepted.
+### Verification Criteria
+
+To qualify for the $1,500 USDC grant, the submission must demonstrate:
+
+1. A live or reproducible ELIZA-based agent integration.
+2. A real `POST /v1/authorize` request to `sign.sigilcore.com`.
+3. Successful receipt of a valid Ed25519-signed **Intent Attestation**.
+4. The Intent Attestation being appended to a real EOA transaction or ERC-4337 UserOperation.
+5. On-chain verification that the transaction was executed only after authorization.
+
+Mocked responses, simulated attestations, or hardcoded JWTs will not qualify.
 
 ---
 
