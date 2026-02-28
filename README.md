@@ -6,6 +6,8 @@
 [![License](https://img.shields.io/badge/license-MIT-blue)](#)
 [![Security](https://img.shields.io/badge/security-Intent--Attestation-green)](#)
 
+[![Spec Version](https://img.shields.io/badge/spec-v0.x-blue)](#)
+
 ---
 
 ## Executive Summary
@@ -44,9 +46,24 @@ OVE separates execution into three distinct layers:
 - **[Sigil Sign](https://sign.sigilcore.com)**
 - `@sigilcore/agent-hooks`
 - Enforces deterministic `ASSURANCE.md` policy
-- Issues short-lived Ed25519-signed **Intent Attestations**
+- Issues short-lived Ed25519-signed **Intent Attestations** conforming to the `sigil-attestations` specification
 
 No transaction may execute without a valid Intent Attestation.
+
+---
+
+## Human Oversight Layer
+
+While OVE is designed for autonomous execution, optional human-in-the-loop oversight can be implemented via **Sigil Sentry** (mobile app, iOS / Android).
+
+Sigil Sentry enables:
+
+- Real-time approval notifications
+- Execution monitoring
+- Emergency pause controls
+- Audit visibility
+
+Human approval is additive — deterministic policy enforcement remains mandatory regardless of Sentry usage.
 
 ---
 
@@ -69,7 +86,7 @@ Building an Agentic VC this week? We are running an independent developer bounty
 
 ### The Challenge
 
-The first developer or team to successfully route their ELIZA agent's transaction intents through the Sigil Sentry API (utilizing the Open Venture Engine) will receive a $1,500 USDC grant.
+The first developer or team to successfully route their ELIZA agent's transaction intents through the Sigil Sign API (utilizing the Open Venture Engine) will receive a $1,500 USDC grant.
 
 **Note:** This is an independent grant issued directly by Sigil Core and is not affiliated with or sponsored by third-party hackathon organizers. Payout is contingent on a successful, verifiable API integration and Intent Attestation generation.
 
@@ -104,7 +121,7 @@ Before execution:
 1. The agent proposes a transaction.
 2. The transaction intent is sent to `POST https://sign.sigilcore.com/v1/authorize`.
 3. Sigil evaluates the request against `ASSURANCE.md`.
-4. If compliant, Sigil returns a short-lived Ed25519-signed Intent Attestation.
+4. If compliant, Sigil Sign returns a short-lived Ed25519-signed Intent Attestation conforming to the `sigil-attestations` specification.
 5. The transaction is executed only if the attestation is appended.
 
 If denied, the agent receives a deterministic JSON Rebound and must halt execution.
@@ -168,6 +185,16 @@ By structurally enforcing deterministic authorization through Sigil Sign, OVE pr
 - Governance can be cryptographically enforced
 - Liability can be bounded by architecture
 - Execution can be provably authorized before capital moves
+
+---
+
+
+## Related Repositories
+
+- **sigil-sign** — Deterministic execution firewall (Intent Attestation issuer)
+- **sigil-attestations** — Canonical Intent Attestation specification (Ed25519 JWT standard)
+- **sigil-vault** — Non-custodial JIT capability broker for execution control
+- **faf** — Fiduciary Agent Framework (legal-technical wrapper)
 
 ---
 
