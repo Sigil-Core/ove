@@ -2,203 +2,358 @@
 
 *A fully autonomous Agentic Venture Capital stack secured by deterministic Intent Attestation enforcement.*
 
-[![Status](https://img.shields.io/badge/status-active--development-black)](#)
-[![License](https://img.shields.io/badge/license-MIT-blue)](#)
-[![Security](https://img.shields.io/badge/security-Intent--Attestation-green)](#)
-[![Spec Version](https://img.shields.io/badge/spec-v0.x-blue)](#)
+![Status](https://img.shields.io/badge/status-active--development-black)
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Security](https://img.shields.io/badge/security-Intent--Attestation-green)
+![Spec Version](https://img.shields.io/badge/spec-v0.x-blue)
 
 ---
 
-## Executive Summary
+# The Problem: AI Can't Be Trusted With the Treasury
 
-The **Open Venture Engine (OVE)** is a pre-wired, Web3-native infrastructure stack that allows anyone to deploy a fully autonomous Venture Capital agent.
+AI agents are rapidly becoming capable of:
 
-OVE aggregates best-in-class execution primitives while structurally enforcing deterministic governance through Sigil’s execution firewall.
+- evaluating market conditions
+- identifying yield opportunities
+- allocating capital
+- managing complex financial strategies
 
-This ensures the agent cannot:
+But handing an AI the private keys to a treasury introduces catastrophic risk.
 
-- Drain its own treasury
-- Execute unauthorized trades
-- Bypass fiduciary constraints
-- Mutate infrastructure without policy approval
+Without structural guardrails, a rogue or hallucinating agent could:
 
-OVE is designed to demonstrate how autonomous capital deployment can operate within strict structural boundaries.
+- drain its own treasury
+- execute unauthorized trades
+- violate fiduciary mandates
+- mutate infrastructure
+- bypass governance entirely
+
+Today, most "autonomous" systems rely on **blind trust** in model alignment.
+
+That is not sufficient for real Venture Capital funds or DAO treasuries.
 
 ---
 
-## Architecture Overview
+# The Solution: Cryptographically Enforced Guardrails
 
-OVE separates execution into three distinct layers:
+The **Open Venture Engine (OVE)** is a pre-wired Web3-native infrastructure stack that allows anyone to deploy a **fully autonomous Venture Capital agent safely**.
 
-### 🧠 The Brain
-- **ELIZA / LangChain**
-- Evaluates market conditions
-- Proposes investments or yield strategies
-- Generates structured transaction intent
+OVE solves the trust problem by separating the AI's **decision-making layer** from the **execution layer**.
 
-### ⚙️ The Engine
-- **Coinbase AgentKit**
-- Handles wallet provisioning
-- Formats EVM transactions
-- Generates ERC-4337 UserOperations
+Execution is controlled by a deterministic firewall called **Sigil Sign**.
 
-- **[Sigil Sign](https://sign.sigilcore.com)**
-- `@sigilcore/agent-hooks`
-- Enforces deterministic `ASSURANCE.md` policy
-- Issues short-lived Ed25519-signed **Intent Attestations** conforming to the `sigil-attestations` specification
+---
+
+# How OVE Protects the Treasury
+
+OVE enforces execution through a deterministic authorization pipeline.
+
+### 1. Intent Declaration
+
+When the AI agent wants to execute an investment, trade, or treasury action, it generates a structured **transaction intent**.
+
+This intent describes:
+
+- the proposed transaction
+- the target chain
+- the capital involved
+
+---
+
+### 2. Policy Evaluation
+
+The intent is sent to the Sigil execution layer, where it is evaluated by **Sigil Lex** — a deterministic policy parser that reads an operator-defined `ASSURANCE.md` file at runtime.
+
+Sigil Lex enforces three policy classes:
+
+**Class 1 — Hard limits:** maximum transaction ETH, action allowlist, chain allowlist (with optional per-chain action overrides). Violations result in immediate `DENIED`.
+
+**Class 2 — Soft limits:** daily aggregate ETH cap. Evaluation-enforced.
+
+**Class 3 — Consensus gates:** transactions exceeding a configurable threshold are not hard-denied. Instead, Sigil Sign creates a durable **consensus hold** and returns a `202 PENDING` response. Execution is blocked until the hold is resolved through Sigil Command. This is the structural implementation of human-in-the-loop governance.
+
+Example `ASSURANCE.md`:
+
+```markdown
+## version
+1.0.0
+
+## class1
+- max_transaction_eth: 5.0
+- allowed_actions: [wallet.transfer, contract.call]
+- allowed_chains: [1, 8453, 42161]
+
+## class2
+- daily_limit_eth: 20.0
+
+## class3
+- consensus_threshold_eth: 10.0
+- require_hold: true
+```
+
+---
+
+### 3. Intent Attestation
+
+If the transaction complies with policy, Sigil returns a cryptographic **Intent Attestation**.
+
+The attestation is:
+
+- Ed25519 signed
+- short lived (≤ 60 seconds)
+- bound to the exact transaction commit
+- tagged with a `policyHash` — SHA-256 of the ASSURANCE.md evaluated, creating a verifiable audit link
+
+Verification rules are defined in the sigil-attestations specification:
+https://github.com/Sigil-Core/sigil-attestations
+
+---
+
+### 4. Deterministic Execution
+
+The transaction **cannot execute on-chain** unless the valid Intent Attestation is attached.
+
+If the agent attempts a prohibited action:
+
+- the request is denied
+- execution halts
+- no capital moves
+
+Class 3 actions create a hold rather than a denial — execution remains blocked until consensus is resolved.
+
+This guarantees policy enforcement **before execution**, not after loss.
+
+---
+
+# Architecture Overview
+
+OVE separates responsibility into three layers.
+
+## The Brain
+
+AI decision layer.
+
+Examples:
+
+- ELIZA
+- LangChain
+- custom LLM agents
+
+Responsibilities:
+
+- evaluate markets
+- analyze opportunities
+- propose investment actions
+
+The Brain **never holds keys and cannot execute transactions directly**.
+
+---
+
+## The Engine
+
+Execution infrastructure.
+
+Components include:
+
+- Coinbase AgentKit (with the **Sigil Action Provider** for direct integration with sigil-sign)
+- ERC-4337 account abstraction
+- transaction construction tooling
+- **Sigil Sign RPC/bundler gateway** — a gated Alchemy proxy where read methods are public and write methods (`eth_sendRawTransaction`, `eth_sendTransaction`, `eth_sendUserOperation`) require a valid Sigil receipt
+
+The Engine converts agent intent into executable transactions **only after authorization**.
+
+---
+
+## The Enforcement Layer
+
+Sigil Sign acts as the deterministic execution firewall.
+
+It:
+
+- evaluates intent against `ASSURANCE.md` via Sigil Lex
+- enforces Class 1/2/3 policy rules
+- issues Intent Attestations for approved actions
+- creates consensus holds for Class 3 actions
+- gates EVM writes through the RPC/bundler gateway
+- blocks unauthorized execution
 
 No transaction may execute without a valid Intent Attestation.
 
 ---
 
-## Human Oversight Layer
+# Human Oversight Layer
 
-While OVE is designed for autonomous execution, optional human-in-the-loop oversight can be implemented via **Sigil Sentry** (mobile app, iOS / Android).
+OVE supports optional human-in-the-loop supervision through **Sigil Sentry**.
 
-Sigil Sentry enables:
+Sigil Sentry provides:
 
-- Real-time approval notifications
-- Execution monitoring
-- Emergency pause controls
-- Audit visibility
+- real-time execution notifications
+- treasury monitoring
+- emergency pause capability
+- audit visibility
 
-Human approval is additive — deterministic policy enforcement remains mandatory regardless of Sentry usage.
+Class 3 consensus holds provide **structural** human-in-the-loop enforcement — not just optional monitoring. Any action exceeding the `consensus_threshold_eth` in `ASSURANCE.md` is gated behind a hold that requires explicit resolution before execution proceeds.
 
 ---
 
-## Identity & Yield Stack
+# Identity & Yield Stack
 
 OVE integrates modern Web3 primitives:
 
-- **[ERC-6551](https://eips.ethereum.org/EIPS/eip-6551)** — Token Bound Accounts (VC Agent is the NFT)
-- **[Safe (Gnosis)](https://safe.global/)** — Treasury custody
-- **[Superfluid](https://www.superfluid.finance/)** — Automated revenue streaming to the human GP
-- **[ERC-4337](https://eips.ethereum.org/EIPS/eip-4337)** — Account abstraction and programmable execution
+ERC-6551
+Token Bound Accounts (VC agent identity)
 
-All outbound execution must route through Sigil.
+Safe (Gnosis)
+Treasury custody layer
 
----
+Superfluid
+Automated revenue streaming to human partners
 
-## The Sigil OS Independent Build Bounty
+ERC-4337
+Account abstraction and programmable execution
 
-Building an Agentic VC this week? We are running an independent developer bounty parallel to ongoing ecosystem hackathons.
-
-### The Challenge
-
-The first developer or team to successfully route their ELIZA agent's transaction intents through the Sigil Sign API (utilizing the Open Venture Engine) will receive a $1,500 USDC grant.
-
-**Note:** This is an independent grant issued directly by Sigil Core and is not affiliated with or sponsored by third-party hackathon organizers. Payout is contingent on a successful, verifiable API integration and Intent Attestation generation.
+All outbound execution routes through Sigil enforcement.
 
 ---
 
-### Submission Deadline
+# The Opportunity: Trustless Agentic Capital
 
-All qualifying integrations must be submitted and verifiable on or before **March 18, 2026 at 23:59 UTC**.
+OVE demonstrates that autonomous finance does not require blind trust.
 
-Submissions after this deadline will not be eligible for the grant.
+By enforcing deterministic authorization through architecture, OVE enables:
 
----
+- fully autonomous Venture Capital funds
+- self-driving DAO treasuries
+- automated on-chain yield strategies
+- agentic financial infrastructure
 
-### Verification Criteria
+Human partners retain oversight while AI agents contribute analytical power.
 
-To qualify for the $1,500 USDC grant, the submission must demonstrate:
-
-1. A live or reproducible ELIZA-based agent integration.
-2. A real `POST /v1/authorize` request to `https://sign.sigilcore.com`.
-3. Successful receipt of a valid Ed25519-signed **Intent Attestation**.
-4. The Intent Attestation being appended to a real EOA transaction or ERC-4337 UserOperation.
-5. On-chain verification that the transaction was executed only after authorization.
-
-Mocked responses, simulated attestations, or hardcoded JWTs will not qualify.
+Execution authority remains structurally bounded.
 
 ---
 
-## How Intent Attestation Works
+# The Strategic Goal
 
-Before execution:
+OVE proves a critical principle:
 
-1. The agent proposes a transaction.
-2. The transaction intent is sent to `POST https://sign.sigilcore.com/v1/authorize`.
-3. Sigil evaluates the request against `ASSURANCE.md`.
-4. If compliant, Sigil Sign returns a short-lived Ed25519-signed Intent Attestation conforming to the `sigil-attestations` specification.
-5. The transaction is executed only if the attestation is appended.
+Autonomous agents can operate within **provable fiduciary boundaries**.
 
-If denied, the agent receives a deterministic JSON Rebound and must halt execution.
+By enforcing deterministic authorization through Sigil Sign:
+
+- governance becomes cryptographically enforceable
+- liability becomes structurally bounded
+- capital cannot move without authorization
+- execution becomes provably compliant
 
 ---
 
-## Getting Started
+# The Sigil OS Independent Build Bounty
 
-```bash
+Building an Agentic VC this week?
+
+We are running an independent developer bounty alongside current ecosystem hackathons.
+
+---
+
+## The Challenge
+
+The first developer or team to successfully route an ELIZA agent's transaction intents through the Sigil Sign API using OVE will receive:
+
+**$1,500 USDC**
+
+Grant issued directly by Sigil Core.
+
+---
+
+## Submission Deadline
+
+All qualifying integrations must be submitted before:
+
+**March 18, 2026 — 23:59 UTC**
+
+---
+
+## Verification Criteria
+
+To qualify, the submission must demonstrate:
+
+1. A live or reproducible ELIZA-based agent integration
+2. A real request to `POST https://sign.sigilcore.com/v1/authorize`
+3. Receipt of a valid Ed25519-signed Intent Attestation
+4. The attestation appended to a real EOA transaction or ERC-4337 UserOperation
+5. On-chain proof that execution occurred only after authorization
+
+Mocked responses or hardcoded tokens will not qualify.
+
+---
+
+# Getting Started
+
+```
 git clone https://github.com/sigil-core/ove.git
+
 cd ove
+
 npm install
 
-# Configure environment variables
 cp .env.example .env
 
-# Edit deterministic policy constraints
 nano ASSURANCE.md
 
-# Start the Agentic VC
 npm run start
 ```
 
 ---
 
-## Repository Structure
+# Repository Structure
 
 ```
 /contracts
-    Smart contract templates (if applicable)
+smart contract templates
 
 /agent
-    Agent orchestration logic
+agent orchestration logic
 
 /policy
-    ASSURANCE.md examples
+ASSURANCE.md examples
 
 /integrations
-    Sigil Sign + AgentKit adapters
+Sigil Sign + AgentKit adapters
 ```
 
 ---
 
-## Who OVE Is For
+# Who OVE Is For
 
-- Autonomous Venture Capital experiments
+OVE is designed for:
+
+- autonomous venture capital experiments
 - DAO treasury automation
-- Onchain investment protocols
-- Agentic yield strategies
-- Web3-native governance tooling
+- onchain investment protocols
+- agentic yield strategies
+- Web3-native governance infrastructure
 
 ---
 
-## The Strategic Goal
+# Related Repositories
 
-OVE demonstrates that autonomous capital deployment does not require blind trust.
+sigil-sign
+Deterministic execution firewall (Intent Attestation issuer, RPC/bundler gateway, Sigil Lex policy engine)
 
-By structurally enforcing deterministic authorization through Sigil Sign, OVE proves:
+sigil-attestations
+Canonical Intent Attestation specification
 
-- Autonomous agents can operate within fiduciary boundaries
-- Governance can be cryptographically enforced
-- Liability can be bounded by architecture
-- Execution can be provably authorized before capital moves
+sigil-vault
+Just-in-time capability broker
 
----
-
-
-## Related Repositories
-
-- **sigil-sign** — Deterministic execution firewall (Intent Attestation issuer)
-- **sigil-attestations** — Canonical Intent Attestation specification (Ed25519 JWT standard)
-- **sigil-vault** — Non-custodial JIT capability broker for execution control
-- **faf** — Fiduciary Agent Framework (legal-technical wrapper)
+faf
+Fiduciary Agent Framework (legal wrapper for autonomous agents)
 
 ---
 
-## Documentation
+# Documentation
 
-Full technical documentation and integration guides are coming soon.
+Full technical documentation will live at:
 
-→ **https://docs.sigilcore.com**
+https://docs.sigilcore.com
