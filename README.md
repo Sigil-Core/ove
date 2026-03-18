@@ -1,6 +1,6 @@
 # Open Venture Engine (OVE)
 
-*A fully autonomous Agentic Venture Capital stack secured by deterministic Intent Attestation enforcement.*
+*The first vertical boilerplate of the [Open Execution Engine (OEE)](https://github.com/Sigil-Core/oee) — OEE pre-wired for fully autonomous Agentic Venture Capital.*
 
 ![Status](https://img.shields.io/badge/status-active--development-black)
 ![License](https://img.shields.io/badge/license-MIT-blue)
@@ -36,11 +36,11 @@ That is not sufficient for real Venture Capital funds or DAO treasuries.
 
 # The Solution: Cryptographically Enforced Guardrails
 
-The **Open Venture Engine (OVE)** is a pre-wired Web3-native infrastructure stack that allows anyone to deploy a **fully autonomous Venture Capital agent safely**.
+The **Open Venture Engine (OVE)** is a vertical boilerplate built on the **[Open Execution Engine (OEE)](https://github.com/Sigil-Core/oee)** — OEE's domain-agnostic enforcement primitives pre-configured for autonomous venture capital. OVE gives anyone a production-ready infrastructure stack to deploy a fully autonomous VC agent safely, without building the enforcement layer from scratch.
 
 OVE solves the trust problem by separating the AI's **decision-making layer** from the **execution layer**.
 
-Execution is controlled by a deterministic firewall called **Sigil Sign**.
+Execution is controlled by **OEE**, implemented in production as **Sigil Sign**.
 
 ---
 
@@ -338,8 +338,11 @@ OVE is designed for:
 
 # Related Repositories
 
+oee
+Open Execution Engine — the enforcement substrate OVE is built on. Healthcare, banking, and enterprise verticals follow the same pattern.
+
 sigil-sign
-Deterministic execution firewall (Intent Attestation issuer, RPC/bundler gateway, Sigil Lex policy engine)
+Production implementation of OEE (Intent Attestation issuer, RPC/bundler gateway, Sigil Lex policy engine)
 
 sigil-attestations
 Canonical Intent Attestation specification
@@ -348,7 +351,7 @@ sigil-vault
 Just-in-time capability broker
 
 faf
-Fiduciary Agent Framework (legal wrapper for autonomous agents)
+Fiduciary Agent Framework (legal governance layer for autonomous agents)
 
 ---
 
