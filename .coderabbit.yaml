@@ -1,0 +1,41 @@
+# .coderabbit.yaml — ove (Open Execution Engine; documentation and
+# specification repository, no analyzable source on the default branch)
+#
+# Auto-review is OFF (Vernon, July 21, 2026): code review happens locally
+# and passes BEFORE a PR is opened; automated PR reviewers are duplicative
+# and delay deployment. CodeRabbit remains available on-demand via
+# `@coderabbitai review` in a PR comment. No automated reviewer is a
+# required status check on this repository's default branch, for the same
+# reason.
+#
+# Having no code does not exempt a repository from this rule. Hosted
+# auto-review fires on any pull request, including a documentation one, so
+# the setting is what matters, not whether the repo carries source. That is a
+# separate question from DeepSource stage 2, which genuinely does not apply
+# here: ove has zero analyzable source and so has no stage 2.
+
+reviews:
+  auto_review:
+    enabled: false
+
+  path_instructions:
+    - path: "README.md"
+      instructions: |
+        Public-facing description of the Open Execution Engine.
+        - Flag any claim about a feature that is not yet shipped.
+        - Verify enforcement is described as mandatory, never optional.
+        - Check that product naming follows the Sigil hierarchy: Sigil Warrant,
+          Sigil GRC, and Sigil Sign are the client-facing names; Sigil Lex and
+          other components appear only as parts of Sign, never as siblings.
+          Never a bare "Sigil" as a product name.
+
+  path_filters:
+    - "!**/*.lock"
+
+# No knowledge_base.code_guidelines block here, deliberately. Sigil house rules
+# live in agents-global.md, which is generated from a canonical source outside
+# this repository. ove is public and gitignores that file fleet-wide, so a
+# filePatterns entry pointing at it would target a path that will never exist
+# and supply nothing. If this repository ever needs house-rules context, commit
+# an AGENTS.md, which CodeRabbit discovers by default. Decided 2026-08-08 after
+# the local review gate flagged the dead pattern.
